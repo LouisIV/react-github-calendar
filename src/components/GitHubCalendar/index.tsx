@@ -19,7 +19,8 @@ import { getGitHubGraphData, GraphData, Block } from '../../services/contributio
 import { createCalendarTheme, getClassName } from '../../utils';
 
 export type Props = {
-  username: string;
+  gitHubUsername: string;
+  gitlabUsername?: string;
   blockSize?: number;
   blockMargin?: number;
   color?: ColorInput;
@@ -32,15 +33,16 @@ export type Props = {
 };
 
 const GitHubCalendar: React.FC<Props> = ({
-  blockSize = 12,
-  blockMargin = 2,
+  blockSize = 10,
+  blockMargin = 4,
   children,
   color = undefined,
   dateFormat = 'MMM d, yyyy',
   fontSize = 14,
   fullYear = true,
   theme = undefined,
-  username,
+  gitHubUsername,
+  gitlabUsername,
   style = {},
   years = [Number(format(new Date(), 'yyyy'))],
 }) => {
@@ -48,19 +50,20 @@ const GitHubCalendar: React.FC<Props> = ({
   const [error, setError] = useState<Error | null>(null);
 
   const prevYears = usePrevious(years);
-  const prevUsername = usePrevious(username);
+  const prevUsername = usePrevious(gitHubUsername);
   const prevFullYear = usePrevious(fullYear);
 
   const fetchData = useCallback(() => {
     setError(null);
     getGitHubGraphData({
       years,
-      username,
+      gitHubUsername: gitHubUsername,
+      gitLabUsername: gitlabUsername,
       fullYear,
     })
       .then(graphs => setGraphs(graphs))
       .catch((error: Error) => setError(error));
-  }, [years, username, fullYear]);
+  }, [years, gitHubUsername, fullYear]);
 
   // Fetch data on mount
   useEffect(() => {
@@ -71,12 +74,12 @@ const GitHubCalendar: React.FC<Props> = ({
   useEffect(() => {
     if (
       prevFullYear !== fullYear ||
-      prevUsername !== username ||
+      prevUsername !== gitHubUsername ||
       prevYears.some(y => !years.includes(y))
     ) {
       fetchData();
     }
-  }, [fetchData, fullYear, prevFullYear, prevUsername, prevYears, username, years]);
+  }, [fetchData, fullYear, prevFullYear, prevUsername, prevYears, gitHubUsername, years]);
 
   function getTheme(): Theme {
     if (theme) {
@@ -114,13 +117,25 @@ const GitHubCalendar: React.FC<Props> = ({
 
     return (
       <div className={getClassName('title', styles.title)} style={style}>
-        <a
-          href={`https://github.com/${username}`}
-          title="GitHub profile"
-          style={{ color: 'inherit' }}
-        >
-          @{username} on GitHub
-        </a>
+        {!!gitHubUsername && (
+          <a
+            href={`https://github.com/${gitHubUsername}`}
+            title="GitHub profile"
+            style={{ color: 'inherit' }}
+          >
+            @{gitHubUsername} on GitHub
+          </a>
+        )}
+        {!!gitHubUsername && !!gitlabUsername && ' & '}
+        {!!gitlabUsername && (
+          <a
+            href={`https://gitlab.com/users/${gitlabUsername}`}
+            title="GitHub profile"
+            style={{ color: 'inherit' }}
+          >
+            @{gitlabUsername} on GitLab
+          </a>
+        )}
       </div>
     );
   }
@@ -159,6 +174,15 @@ const GitHubCalendar: React.FC<Props> = ({
             fill={theme[`grade${day.info ? day.info.intensity : 0}`]}
             data-tip={day.info ? getTooltipMessage(day as Required<Block>) : null}
             key={day.date}
+            rx="2"
+            ry="2"
+            style={{
+              outlineColor: 'rgba(27,31,35,.04)',
+              outlineStyle: 'solid',
+              outlineWidth: 1,
+              shapeRendering: 'geometricPrecision',
+              outlineOffset: -1,
+            }}
           />
         )),
       )

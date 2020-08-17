@@ -36,7 +36,8 @@ export type MonthLabels = {
 
 export type RequestOptions = {
   fullYear: boolean;
-  username: string;
+  gitHubUsername?: string;
+  gitLabUsername?: string;
   years: number[];
 };
 
@@ -175,9 +176,77 @@ function getGraphDataForYear(year: number, data: ApiResult, fullYear: boolean): 
   };
 }
 
+const combineContributions = (
+  gitlabContributions: Record<string, number>,
+  githubContributions: ApiResult,
+): ApiResult => {
+  const t = new Map();
+
+  const years = new Map();
+
+  // First pass to build color and intensity table
+  githubContributions.contributions.forEach(contribution => {
+    t.set(contribution.count, { color: contribution.color, intensity: contribution.intensity });
+  });
+
+  const r = {
+    ...githubContributions,
+
+    // Second pass to add Gitlab data
+    contributions: githubContributions.contributions.map(contribution => {
+      if (contribution.date in gitlabContributions) {
+        const year = `${new Date(contribution.date).getFullYear()}`;
+
+        if (years.has(year)) {
+          years.set(year, years.get(year) + 1);
+        } else {
+          years.set(year, 1);
+        }
+
+        const count = contribution.count + gitlabContributions[contribution.date];
+
+        if (t.has(count)) {
+          return {
+            ...contribution,
+            count: count,
+            ...t.get(count),
+          };
+        }
+
+        return {
+          ...contribution,
+          count: count,
+          color: 'red',
+        };
+      } else {
+        return contribution;
+      }
+    }),
+  };
+
+  r.years = githubContributions.years.map(year => {
+    return {
+      ...year,
+      total: years.has(year.year) ? year.total + years.get(year.year) : year.total,
+    };
+  });
+
+  console.log(years);
+
+  return r;
+};
+
 export async function getGitHubGraphData(options: RequestOptions): Promise<GraphData[]> {
-  const { fullYear, username, years } = options;
-  const data: ApiResult = await (await fetch(API_URL + username)).json();
+  const { fullYear, gitHubUsername, gitLabUsername, years } = options;
+  const githubData: ApiResult = await (await fetch(API_URL + gitHubUsername)).json();
+
+  const contributions = await (
+    await fetch(
+      `https://cors-anywhere.herokuapp.com/https://gitlab.com/users/${gitLabUsername}/calendar.json`,
+    )
+  ).json();
+
+  const data = combineContributions(contributions, githubData);
 
   if (!data.years.length) {
     throw Error('No data available');

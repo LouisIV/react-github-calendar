@@ -10,13 +10,18 @@ import CodeBlock from './CodeBlock';
 import ForkMe from './ForkMe';
 
 const Demo: React.FC = () => {
-  const [username, setUsername] = useState('grubersjoe');
-  const input = React.createRef<HTMLInputElement>();
+  const [gitHubUsername, setGitHubUsername] = useState('louisiv');
+  const [gitLabUsername, setGitLabUsername] = useState('louislombardoiv');
+  const gitHubInput = React.createRef<HTMLInputElement>();
+  const gitLabInput = React.createRef<HTMLInputElement>();
 
   const updateUsername: FormEventHandler = event => {
     event.preventDefault();
-    if (input.current) {
-      setUsername(String(input.current.value).toLowerCase());
+    if (gitHubInput.current) {
+      setGitHubUsername(String(gitHubInput.current.value).toLowerCase());
+    }
+    if (gitHubInput.current) {
+      setGitLabUsername(String(gitHubInput.current.value).toLowerCase());
     }
   };
 
@@ -28,14 +33,25 @@ const Demo: React.FC = () => {
           <h1>GitHub Contributions Calendar</h1>
           <div>A React component to display a GitHub contributions graph</div>
           <form onSubmit={updateUsername}>
-            <input type="text" placeholder="Enter your GitHub username" ref={input} required />
+            <input
+              type="text"
+              placeholder="Enter your GitHub username"
+              ref={gitHubInput}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Enter your GitLab username"
+              ref={gitLabInput}
+              required
+            />
             <button type="submit">Show calendar</button>
           </form>
         </div>
       </header>
 
       <main className="container">
-        <GitHubCalendar username={username} />
+        <GitHubCalendar gitHubUsername={gitHubUsername} gitlabUsername={gitLabUsername} />
 
         <section>
           <h2>Installation</h2>
@@ -44,7 +60,7 @@ const Demo: React.FC = () => {
           <CodeBlock>
             {`import GitHubCalendar from 'react-github-calendar';
 
-<GitHubCalendar username="${username}" />`}
+<GitHubCalendar username="${gitHubUsername}" />`}
           </CodeBlock>
         </section>
 
@@ -182,8 +198,8 @@ const Demo: React.FC = () => {
 
           <h3 id="show-contributions-of-last-year">Show contributions of last year</h3>
           <p>By default the last whole year is shown.</p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" />`}</CodeBlock>
-          <GitHubCalendar username={username} />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" />`}</CodeBlock>
+          <GitHubCalendar gitHubUsername={gitHubUsername} gitlabUsername={gitLabUsername} />
 
           <hr />
 
@@ -192,17 +208,26 @@ const Demo: React.FC = () => {
             You might prefer the calendar for the current year to start in January (instead of
             showing the last twelve months).
           </p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" fullYear={false} />`}</CodeBlock>
-          <GitHubCalendar username={username} fullYear={false} />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" fullYear={false} />`}</CodeBlock>
+          <GitHubCalendar
+            gitHubUsername={gitHubUsername}
+            fullYear={false}
+            gitlabUsername={gitLabUsername}
+          />
 
           <hr />
 
           <h3 id="show-several-years">Show several years</h3>
           <p>To display multiple years, pass an array into the component:</p>
           <CodeBlock>
-            {`<GitHubCalendar username="${username}" years={[2018, 2017]} fullYear={false}/>`}
+            {`<GitHubCalendar username="${gitHubUsername}" years={[2018, 2017]} fullYear={false}/>`}
           </CodeBlock>
-          <GitHubCalendar username={username} years={[2018, 2017]} fullYear={false} />
+          <GitHubCalendar
+            gitHubUsername={gitHubUsername}
+            years={[2018, 2017]}
+            fullYear={false}
+            gitlabUsername={gitLabUsername}
+          />
 
           <hr />
 
@@ -213,8 +238,8 @@ const Demo: React.FC = () => {
             If a color is set, the theme will be ignored. If neither color or theme is set, the
             standard GitHub colors will be used (as in these examples).
           </p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" color="hsl(203, 82%, 33%)" />`}</CodeBlock>
-          <GitHubCalendar username={username} color="hsl(203, 82%, 33%)" />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" color="hsl(203, 82%, 33%)" />`}</CodeBlock>
+          <GitHubCalendar gitHubUsername={gitHubUsername} color="hsl(203, 82%, 33%)" />
           <p>Set the colors explicitly like this:</p>
           <CodeBlock>
             {`const defaultTheme = {
@@ -227,9 +252,9 @@ const Demo: React.FC = () => {
   grade0: '#ebedf0',
 };
 
-<GitHubCalendar username="${username}" theme={defaultTheme} />`}
+<GitHubCalendar username="${gitHubUsername}" theme={defaultTheme} />`}
           </CodeBlock>
-          <GitHubCalendar username={username} />
+          <GitHubCalendar gitHubUsername={gitHubUsername} />
 
           <hr />
 
@@ -242,13 +267,13 @@ const Demo: React.FC = () => {
           </p>
           <CodeBlock>
             {`<div>
-    <GitHubCalendar username="${username}">
+    <GitHubCalendar username="${gitHubUsername}">
       <ReactTooltip delayShow={50} html />
     </GitHubCalendar>
   </div>`}
           </CodeBlock>
           <div>
-            <GitHubCalendar username={username}>
+            <GitHubCalendar gitHubUsername={gitHubUsername}>
               <ReactTooltip delayShow={50} html />
             </GitHubCalendar>
           </div>
@@ -257,15 +282,15 @@ const Demo: React.FC = () => {
 
           <h3 id="different-block-size">Different block size</h3>
           <p>The block size (12 per default) is configurable:</p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" blockSize={10} />`}</CodeBlock>
-          <GitHubCalendar username={username} blockSize={10} />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" blockSize={10} />`}</CodeBlock>
+          <GitHubCalendar gitHubUsername={gitHubUsername} blockSize={10} />
 
           <hr />
 
           <h3 id="different-block-margin">Different block margin (and size)</h3>
           <p>Analogously the block margin can be adjusted.</p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" blockSize={10} blockMargin={4} />`}</CodeBlock>
-          <GitHubCalendar username={username} blockSize={10} blockMargin={4} />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" blockSize={10} blockMargin={4} />`}</CodeBlock>
+          <GitHubCalendar gitHubUsername={gitHubUsername} blockSize={10} blockMargin={4} />
 
           <hr />
 
@@ -275,8 +300,8 @@ const Demo: React.FC = () => {
             comes in handy, if a large block size or margin is set. The default base font size is
             14px.
           </p>
-          <CodeBlock>{`<GitHubCalendar username="${username}" fontSize={14} blockSize={12} />`}</CodeBlock>
-          <GitHubCalendar username={username} fontSize={14} blockSize={12} />
+          <CodeBlock>{`<GitHubCalendar username="${gitHubUsername}" fontSize={14} blockSize={12} />`}</CodeBlock>
+          <GitHubCalendar gitHubUsername={gitHubUsername} fontSize={14} blockSize={12} />
         </section>
       </main>
     </div>

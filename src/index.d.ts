@@ -2,7 +2,8 @@ import React, { CSSProperties } from 'react';
 import { ColorInput } from 'tinycolor2';
 
 export type Props = {
-  username: string;
+  gitHubUsername: string;
+  gitlabUsername?: string;
   blockSize?: number;
   blockMargin?: number;
   color?: ColorInput;
