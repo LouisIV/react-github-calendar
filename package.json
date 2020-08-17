@@ -1,11 +1,11 @@
 {
-  "name": "react-github-calendar",
+  "name": "react-contribution-graph",
   "version": "1.0.4",
   "description": " A flexible React component to display a GitHub contributions graph",
-  "author": "Jonathan Gruber <gruberjonathan@gmail.com>",
+  "author": "Louis Lombardo <louis@lombardo.work>",
   "license": "MIT",
-  "homepage": "https://grubersjoe.github.io/react-github-calendar/",
-  "repository": "grubersjoe/react-github-calendar",
+  "homepage": "https://github.com/LouisIV/react-github-calendar",
+  "repository": "LouisIV/react-github-calendar",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -23,6 +23,9 @@
   "dependencies": {
     "date-fns": "^2.9.0",
     "tinycolor2": "^1.4.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
